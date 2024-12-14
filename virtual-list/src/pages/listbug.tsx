@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import VirtualList from 'rc-virtual-list'
-import { FlightCard } from '@/components/FlightCard'
+import { Index } from '@/components/FlightCard'
 
 export default function List() {
   const flightList = Array.from({ length: 200 }, (_, i) => ({
@@ -18,8 +18,8 @@ export default function List() {
   return (
     <div>
       <VirtualList data={ flightList } itemKey={ 'id' } height={ 600 } itemHeight={ 100 }>
-        { (item) => <FlightCard key={ item.id } height={ item.height }
-                                rgb={ item.rgb }>{ (item.value + '') }</FlightCard> }
+        { (item) => <Index key={ item.id } height={ item.height }
+                           rgb={ item.rgb }>{ (item.value + '') }</Index> }
       </VirtualList>
     </div>)
 }

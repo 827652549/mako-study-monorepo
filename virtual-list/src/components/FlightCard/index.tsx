@@ -1,7 +1,7 @@
 import styles from './index.module.scss'
 import { ReactNode } from 'react'
 
-export function FlightCard({ children, height, rgb }: {
+export default function FlightCard({ children, height, rgb }: {
   children: ReactNode, height: number, rgb: {
     r1: number,
     r2: number,
