@@ -1,0 +1,19 @@
+{
+  "name": "lock-study",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@makogroup/empty": "^2.0.0",
+    "@swc/core": "^1.10.1"
+  },
+  "devDependencies": {
+    "@makogroup/add": "^2.0.0"
+  }
+}
