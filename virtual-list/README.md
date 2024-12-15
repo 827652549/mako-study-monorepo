@@ -5,4 +5,5 @@
 https://virtual-list-react-component.vercel.app/demo/animate
 原本有尝试使用"rc-virtual-list",但是发现对动态高度会有抖动的bug
 
-于是改用了
+于是改用了react-viewport-list
+https://whimsical.com/X2kdbWu69tjShHGjgqaw9B
