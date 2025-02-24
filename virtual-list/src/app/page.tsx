@@ -6,10 +6,9 @@ import Link from 'next/link'
 export default function Home() {
   return (
     <div style={ { border: '1px solid red' } }>
-      <p>动态高度虚拟列表页</p>
       <ul>
-        <li><Link href={ '/list' }>使用「npm:react-viewport-list」</Link></li>
-        <li><Link href={ '/listbug' }>有bug,使用npm「rc-virtual-list」</Link></li>
+        <li style={{fontSize:'18px'}}><Link href={ '/list' }>use「npm:react-viewport-list7-1-2」</Link></li>
+        <li style={{fontSize:'18px'}}><Link href={ '/listbugfix' }>use「npm:react-viewport-list7-1-2-bugfix」</Link></li>
       </ul>
     </div>
   )

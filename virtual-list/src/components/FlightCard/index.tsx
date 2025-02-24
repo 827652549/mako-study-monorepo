@@ -14,7 +14,7 @@ export default function FlightCard({ children, height, rgb }: {
         ${ rgb.r1 }, ${ rgb.r2 }, ${ rgb.r3 })`,
       height: height,
     } }>
-      机票航班卡片{ children }
+      FlightCard :{ children }
     </div>
   )
 }

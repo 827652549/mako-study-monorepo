@@ -5,7 +5,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head/>
-      <body>
+      <body style={{padding:0,margin:0}}>
       <script
         dangerouslySetInnerHTML={ {
           __html: `window.renderStartTime = Date.now();

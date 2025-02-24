@@ -3,7 +3,7 @@
 import React, { useRef } from 'react'
 import listStyles from './list.module.scss'
 import FlightCard from '@/components/FlightCard'
-import { ViewportList } from '@/components/react-viewport-list-7-1-2'
+import { ViewportList } from '@/components/react-viewport-list-7-1-2-bugifx'
 import Link from 'next/link'
 const flightList = Array.from({ length: 200 }, (_, i) => ({
   id: i,
@@ -25,8 +25,8 @@ export default function List({list=flightList}) {
   return (
     <>
       <li style={{fontSize:'18px'}}><Link href={ '/list' }>use「npm:react-viewport-list7-1-2」</Link></li>
-      <li style={{fontSize:'18px'}}><Link href={ '/listbugfix' }>use「npm:react-viewport-list7-1-2-bugfix」</Link></li>
-      <div style={{fontSize:'25px'}}>unfixed</div>
+      <li style={{fontSize:'18px'}}><Link href={ '/listbugfix' }>use「npm:react-viewport-list7-1-2-bugfixed」</Link></li>
+      <div style={{fontSize:'25px'}}>fixed</div>
       <p style={{fontSize:'18px'}}>in ios native, refresh page, and scroll some items, then click the button</p>
       <div
         style={{display:'flex', flexDirection:"row"}}
