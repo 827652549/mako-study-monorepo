@@ -358,10 +358,12 @@ const ViewportListInner = <T,>(
                 [propName.top]: limits[propName.top] - overscanSize,
                 [propName.bottom]: limits[propName.bottom] + overscanSize,
             };
+            const index = getScrollPositionRef.current().index
+            const offset = getScrollPositionRef.current().offset
             if (
                 (marginTopRef.current < 0 &&
                     topSpacerRect[propName.top] - marginTopRef.current >= limitsWithOverscanSize[propName.top]) ||
-                (marginTopRef.current > 0 && topSpacerRect[propName.top] >= limitsWithOverscanSize[propName.top]) ||
+                (index === 0 && offset <= 0 &&marginTopRef.current > 0 && topSpacerRect[propName.top] >= limitsWithOverscanSize[propName.top]) ||
                 (marginTopRef.current && scrollToIndexOptionsRef.current)
             ) {
                 topSpacer.style[propName.marginTop] = '0px';
@@ -369,6 +371,11 @@ const ViewportListInner = <T,>(
                 viewport[propName.scrollTop] += -marginTopRef.current;
                 viewport.style[propName.overflowY] = '';
                 marginTopRef.current = 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                ref.current.scrollToIndex({
+                    index: 0,
+                })
 
                 return;
             }
