@@ -1,0 +1,23 @@
+{
+  "name": "write-ck",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@clickhouse/client": "^1.10.0",
+    "@makogroup/middleware-node-logger": "^0.0.16",
+    "express": "^4.21.2",
+    "kafka-node": "^5.0.0",
+    "kafkajs": "^2.2.4",
+    "kafkajs-snappy": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2"
+  }
+}
