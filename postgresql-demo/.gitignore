@@ -1,0 +1,28 @@
+# 环境变量和凭证
+.env
+.env.local
+.env.*.local
+.env.*.private
+
+# 依赖
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+
+# 日志
+*.log
+npm-debug.log*
+
+# 系统文件
+.DS_Store
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+playground.ts
