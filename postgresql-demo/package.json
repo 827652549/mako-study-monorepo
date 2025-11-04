@@ -5,7 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "connect": "node connect.js"
+    "connect": "node connect.js",
+    "benchmark": "node benchmark.js",
+    "advanced-benchmark": "node advanced-benchmark.js"
   },
   "keywords": [],
   "author": "",

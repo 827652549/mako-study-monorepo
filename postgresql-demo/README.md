@@ -1,6 +1,6 @@
-# PostgreSQL Supabase 连接
+# PostgreSQL Supabase 连接 & 性能测试
 
-简单的Supabase PostgreSQL数据库连接脚本。
+Supabase PostgreSQL 数据库连接和性能基准测试工具。
 
 ## 快速开始
 
@@ -15,26 +15,244 @@ npm install
 DATABASE_URL=postgresql://postgres.zicshbdkgtzakmnjzzgo:YOUR_PASSWORD@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
 ```
 
-### 3. 连接
+### 3. 测试连接
 ```bash
 npm run connect
 ```
 
-## 文件说明
-
-- `connect.js` - 连接脚本，执行基本查询
-- `.env.local` - 数据库凭证（Git忽略）
-- `.gitignore` - Git安全规则
-
-## 连接字符串
-
-使用 Supabase 连接池端点：
+输出示例：
 ```
-postgresql://postgres.zicshbdkgtzakmnjzzgo:PASSWORD@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
+✅ ✅ ✅ 连接成功！✅ ✅ ✅
+
+当前数据库时间: 2025-11-04T06:30:45.123Z
+
+📊 数据库信息：
+  用户: postgres.zicshbdkgtzakmnjzzgo
+  数据库: postgres
+  版本: PostgreSQL 15.4 (Debian 15.4-1.pgdg120+1) on aarch64-unknown-linux-gnu
+```
+
+---
+
+## 🚀 性能测试
+
+### 基础性能测试
+
+全面的性能基准测试，包含连接延迟、插入、查询、更新、删除和事务操作：
+
+```bash
+npm run benchmark
+```
+
+**测试内容：**
+- 连接延迟分析（10次迭代）
+- 单条插入性能（50次）
+- 批量插入性能（4个不同批量大小）
+- 各种查询操作
+- 更新和删除操作
+- 事务性能
+- 自动生成性能报告
+
+**输出示例：**
+```
+🚀 开始 Supabase 性能测试...
+============================================================
+
+📍 连接延迟测试
+──────────────────────────────────────────────────────────
+平均延迟: 269.44ms
+最小延迟: 164.16ms
+最大延迟: 1186.30ms
+
+... [更多测试结果] ...
+
+📊 性能测试报告
+============================================================
+总测试数: 79
+成功: 79 ✅
+失败: 0 ❌
+
+... [详细报告] ...
+```
+
+### 高级性能测试
+
+深度性能分析，包含网络延迟分析、连接池测试、数据大小影响和索引优化：
+
+```bash
+npm run advanced-benchmark
+```
+
+**测试内容：**
+- 网络延迟详细分析（20次迭代，包括 P95、P99）
+- 连接池性能（顺序连接测试）
+- 不同数据大小的查询性能（10-10,000 条）
+- JSONB 查询优化分析
+- 索引性能对比（有索引 vs 无索引）
+- 15秒连接稳定性测试
+- 综合性能评估和优化建议
+
+**输出示例：**
+```
+🚀 开始高级性能测试...
+============================================================
+
+📡 网络延迟分析
+────────────────────────────────────────────────────────────
+平均延迟: 208.98ms
+中位数: 164.93ms
+P95: 1017.72ms
+P99: 1017.72ms
+
+... [更多测试结果] ...
+
+💡 性能建议:
+  ⚠️  平均连接延迟 269.44ms 较高，考虑使用连接池
+  ✅ 批量插入比单条插入快 107.9%
+
+============================================================
+```
+
+---
+
+## 📊 性能报告
+
+详细的性能分析报告，包含：
+- 性能数据汇总表
+- 连接性能分析
+- 数据操作性能对比
+- 索引效果评估
+- 发现的问题
+- 优化建议
+- 场景化性能目标
+- 与其他服务的对标
+
+```bash
+cat PERFORMANCE_REPORT.md
+```
+
+---
+
+## 📋 文件说明
+
+| 文件 | 说明 |
+|-----|-----|
+| `connect.js` | 基础连接测试脚本 |
+| `benchmark.js` | 全面的性能基准测试 |
+| `advanced-benchmark.js` | 深度的性能分析测试 |
+| `PERFORMANCE_REPORT.md` | 详细的性能分析报告 |
+| `.env.local` | 数据库凭证（Git忽略） |
+| `package.json` | 项目配置和脚本 |
+
+---
+
+## 📈 性能快照
+
+基于最新测试的关键指标：
+
+| 指标 | 值 | 状态 |
+|-----|---|------|
+| 平均连接延迟 | 209ms | ⚠️ 中等 |
+| 中位数延迟 | 165ms | ✅ 良好 |
+| 单条查询延迟 | 170ms | ✅ 可接受 |
+| 批量插入（500条） | 357ms | ✅ 高效 |
+| 批量吞吐量 | 1,400条/秒 | ✅ 优秀 |
+| 连接稳定性 | 100% | ✅ 优秀 |
+
+---
+
+## 💡 关键发现
+
+### ✅ 优势
+1. **连接稳定性优秀**：15秒测试中100%成功率
+2. **批量操作高效**：500条批量插入可达1,400条/秒
+3. **JSONB查询优化**：JSONB查询耗时恒定~165ms
+
+### ⚠️ 需要改进
+1. **延迟较高**：平均165-270ms（受地理位置影响）
+2. **单条操作低效**：~172ms/条（不适合高频操作）
+3. **QPS较低**：5.67（高并发场景需优化）
+
+### 🎯 优化建议
+1. **使用批量操作**：批量插入速度快34倍
+2. **启用连接池**：已使用pooler端点
+3. **创建索引**：为常查字段添加索引
+4. **分页查询**：避免一次加载过多数据
+5. **缓存策略**：使用Redis缓存热数据
+6. **实时同步**：使用Supabase Realtime替代轮询
+
+---
+
+## 🔧 连接字符串
+
+### 使用连接池（推荐）
+```
+postgresql://user:password@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
+```
+
+### 直接连接
+```
+postgresql://user:password@db.zicshbdkgtzakmnjzzgo.supabase.co:5432/postgres
 ```
 
 **用户名：** `postgres.zicshbdkgtzakmnjzzgo`
 **密码：** 你的Supabase密码
-**主机：** `aws-1-ap-southeast-2.pooler.supabase.com`
+**主机：** `aws-1-ap-southeast-2.pooler.supabase.com` (连接池) 或 `db.zicshbdkgtzakmnjzzgo.supabase.co` (直连)
 **端口：** `5432`
 **数据库：** `postgres`
+
+---
+
+## 🔄 重复测试
+
+在不同时间重复运行性能测试，用于：
+- 检测性能漂移
+- 评估优化效果
+- 对标不同配置
+
+```bash
+# 快速测试（~20秒）
+npm run benchmark
+
+# 深度测试（~2-3分钟）
+npm run advanced-benchmark
+```
+
+---
+
+## 📝 自定义测试
+
+修改脚本中的参数进行自定义测试：
+
+```javascript
+// 调整批量大小
+const batchSizes = [10, 50, 100, 500, 1000]
+
+// 调整连接数
+const iterations = 20
+
+// 调整测试持续时间
+const duration = 60000 // 60秒
+```
+
+---
+
+## ⚠️ 注意事项
+
+1. **成本**：性能测试会产生数据库查询，可能产生额外费用
+2. **数据清理**：benchmark.js 默认保留测试表，advanced-benchmark.js 会自动清理
+3. **并发限制**：连接池有并发限制，避免超过100个并发连接
+4. **地理位置**：测试数据基于 AWS ap-southeast-2（澳大利亚）
+5. **网络条件**：测试结果受网络质量影响，在不同网络环境下会有差异
+
+---
+
+## 🔗 参考资源
+
+- [Supabase 官方文档](https://supabase.io/docs)
+- [PostgreSQL 性能优化](https://www.postgresql.org/docs/current/performance-tips.html)
+- [Postgres 库文档](https://github.com/potehinc/postgres)
+
+---
+
+*最后更新：2025-11-04*
