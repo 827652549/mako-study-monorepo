@@ -8,6 +8,7 @@ npm install --save-dev @ctrip/swc-plugin-transform-import
 
 ## Usage
 
+
 添加配置到下配置文件中 `.swcrc`，`webpack.config.js` or `next.config.js`
 
 ```json
