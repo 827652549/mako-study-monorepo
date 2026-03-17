@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Transition Test</title>
+  <style>
+    body {
+      background: #111;
+      color: #f0ede8;
+      font-family: system-ui, sans-serif;
+      padding: 32px;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .list-view, .detail-view {
+      max-width: 600px;
+    }
+
+    .detail-view {
+      display: none;
+    }
+
+    .detail-view.active {
+      display: block;
+    }
+
+    .list-view.hidden {
+      display: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      cursor: pointer;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #1c1c1c;
+      border: 1px solid #2a2a2a;
+    }
+
+    .card-image {
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .card-info {
+      padding: 8px 12px;
+    }
+
+    .card-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .card-price {
+      font-size: 11px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .detail-content {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .detail-image {
+      width: 100%;
+      max-width: 180px;
+      flex-shrink: 0;
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+    }
+
+    .detail-info {
+      flex: 1;
+      padding-top: 8px;
+    }
+
+    .detail-tag {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .detail-name {
+      font-size: 26px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .detail-price {
+      font-size: 20px;
+      font-weight: 300;
+      color: #c8b89a;
+      margin-bottom: 16px;
+    }
+
+    .detail-desc {
+      font-size: 13px;
+      line-height: 1.8;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      background: none;
+      border: 1px solid #333;
+      color: #666;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* View Transition 核心样式 */
+    ::view-transition-old(root) {
+      animation: fade-out 0.3s ease forwards;
+    }
+    ::view-transition-new(root) {
+      animation: fade-in 0.3s ease forwards;
+    }
+
+    @keyframes fade-out {
+      to { opacity: 0; }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+    }
+
+    /* 命名元素动画 */
+    ::view-transition-old(block-1),
+    ::view-transition-old(block-2),
+    ::view-transition-old(block-3),
+    ::view-transition-old(block-4),
+    ::view-transition-old(block-5),
+    ::view-transition-old(block-6) {
+      animation: scale-out 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    ::view-transition-new(block-1),
+    ::view-transition-new(block-2),
+    ::view-transition-new(block-3),
+    ::view-transition-new(block-4),
+    ::view-transition-new(block-5),
+    ::view-transition-new(block-6) {
+      animation: scale-in 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes scale-out {
+      to {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes scale-in {
+      from {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #555; margin-bottom: 24px;">
+    View Transitions Demo (Vanilla JS) — 点击卡片
+  </h1>
+
+  <div class="list-view" id="listView">
+    <div class="grid">
+      <div class="card" data-id="1">
+        <div class="card-image" style="background: linear-gradient(135deg,#667eea,#764ba2); view-transition-name: block-1;">⌚</div>
+        <div class="card-info">
+          <div class="card-name">Minimal Watch</div>
+          <div class="card-price">¥2,890</div>
+        </div>
+      </div>
+      <div class="card" data-id="2">
+        <div class="card-image" style="background: linear-gradient(135deg,#f093fb,#f5576c); view-transition-name: block-2;">🏺</div>
+        <div class="card-info">
+          <div class="card-name">Ceramic Vase</div>
+          <div class="card-price">¥680</div>
+        </div>
+      </div>
+      <div class="card" data-id="3">
+        <div class="card-image" style="background: linear-gradient(135deg,#4facfe,#00f2fe); view-transition-name: block-3;">👟</div>
+        <div class="card-info">
+          <div class="card-name">Running Shoe</div>
+          <div class="card-price">¥1,299</div>
+        </div>
+      </div>
+      <div class="card" data-id="4">
+        <div class="card-image" style="background: linear-gradient(135deg,#43e97b,#38f9d7); view-transition-name: block-4;">🧥</div>
+        <div class="card-info">
+          <div class="card-name">Linen Jacket</div>
+          <div class="card-price">¥3,200</div>
+        </div>
+      </div>
+      <div class="card" data-id="5">
+        <div class="card-image" style="background: linear-gradient(135deg,#fa709a,#fee140); view-transition-name: block-5;">💍</div>
+        <div class="card-info">
+          <div class="card-name">Gold Ring</div>
+          <div class="card-price">¥5,600</div>
+        </div>
+      </div>
+      <div class="card" data-id="6">
+        <div class="card-image" style="background: linear-gradient(135deg,#a18cd1,#fbc2eb); view-transition-name: block-6;">🪨</div>
+        <div class="card-info">
+          <div class="card-name">Stone Bowl</div>
+          <div class="card-price">¥420</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-view" id="detailView">
+    <div class="detail-content">
+      <div class="detail-image" id="detailImage" style="view-transition-name: block-1;">⌚</div>
+      <div class="detail-info">
+        <div class="detail-tag" id="detailTag">NEW ARRIVAL</div>
+        <div class="detail-name" id="detailName">Minimal Watch</div>
+        <div class="detail-price" id="detailPrice">¥2,890</div>
+        <div class="detail-desc" id="detailDesc">A minimalist design with premium materials.</div>
+        <button class="back-btn" id="backBtn">← 返回列表</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const products = {
+      1: { emoji: '⌚', name: 'Minimal Watch', price: '¥2,890', bg: 'linear-gradient(135deg,#667eea,#764ba2)', tag: 'NEW ARRIVAL', desc: 'A minimalist design with premium materials. Features sapphire crystal, Swiss movement, and 50m water resistance.' },
+      2: { emoji: '🏺', name: 'Ceramic Vase', price: '¥680', bg: 'linear-gradient(135deg,#f093fb,#f5576c)', tag: 'HANDCRAFTED', desc: 'Hand-thrown ceramic vase with organic shape. Each piece is unique with subtle glaze variations.' },
+      3: { emoji: '👟', name: 'Running Shoe', price: '¥1,299', bg: 'linear-gradient(135deg,#4facfe,#00f2fe)', tag: 'PERFORMANCE', desc: 'Lightweight running shoe with responsive cushioning. Breathable mesh upper and durable rubber outsole.' },
+      4: { emoji: '🧥', name: 'Linen Jacket', price: '¥3,200', bg: 'linear-gradient(135deg,#43e97b,#38f9d7)', tag: 'SUMMER COLLECTION', desc: 'Relaxed-fit linen jacket perfect for warm weather. Unlined for breathability with natural texture.' },
+      5: { emoji: '💍', name: 'Gold Ring', price: '¥5,600', bg: 'linear-gradient(135deg,#fa709a,#fee140)', tag: 'FINE JEWELRY', desc: '18k solid gold ring with brushed finish. Minimalist design suitable for everyday wear.' },
+      6: { emoji: '🪨', name: 'Stone Bowl', price: '¥420', bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', tag: 'ZEN HOME', desc: 'Natural stone bowl carved from single piece of granite. Perfect for incense or small items.' },
+    }
+
+    const listView = document.getElementById('listView')
+    const detailView = document.getElementById('detailView')
+    const detailImage = document.getElementById('detailImage')
+    const detailTag = document.getElementById('detailTag')
+    const detailName = document.getElementById('detailName')
+    const detailPrice = document.getElementById('detailPrice')
+    const detailDesc = document.getElementById('detailDesc')
+    const backBtn = document.getElementById('backBtn')
+
+    let currentId = null
+
+    // 添加卡片点击事件
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id
+        showDetail(id, card)
+      })
+    })
+
+    function showDetail(id, cardElement) {
+      const product = products[id]
+      currentId = id
+
+      // 更新详情视图
+      detailImage.textContent = product.emoji
+      detailImage.style.background = product.bg
+      detailImage.style.viewTransitionName = `block-${id}`
+      detailTag.textContent = product.tag
+      detailName.textContent = product.name
+      detailPrice.textContent = product.price
+      detailDesc.textContent = product.desc
+
+      // 使用 View Transition API
+      if (document.startViewTransition) {
+        console.log('[VT] Starting view transition...')
+        const transition = document.startViewTransition(() => {
+          console.log('[VT] Callback executing')
+          // 在 callback 中更新 DOM
+          listView.classList.add('hidden')
+          detailView.classList.add('active')
+        })
+
+        transition.ready.then(() => {
+          console.log('[VT] Ready resolved')
+        })
+
+        transition.finished.then(() => {
+          console.log('[VT] Finished resolved')
+        })
+      } else {
+        console.log('[VT] View Transition API not supported')
+        listView.classList.add('hidden')
+        detailView.classList.add('active')
+      }
+    }
+
+    // 返回按钮
+    backBtn.addEventListener('click', () => {
+      if (document.startViewTransition) {
+        console.log('[VT] Starting view transition (back)...')
+        const transition = document.startViewTransition(() => {
+          console.log('[VT] Callback executing (back)')
+          listView.classList.remove('hidden')
+          detailView.classList.remove('active')
+        })
+
+        transition.finished.then(() => {
+          console.log('[VT] Finished resolved (back)')
+          currentId = null
+        })
+      } else {
+        listView.classList.remove('hidden')
+        detailView.classList.remove('active')
+        currentId = null
+      }
+    })
+  </script>
+</body>
+</html>

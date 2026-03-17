@@ -1,0 +1,32 @@
+{
+  "name": "@ctrip/swc-plugin-transform-import",
+  "version": "1.0.0",
+  "description": "swc transform import plugin",
+  "license": "MIT",
+  "keywords": [
+    "swc-plugin",
+    "swc",
+    "transform",
+    "import",
+    "wasm",
+    "wasi",
+    "rust",
+    "webassembly",
+    "webpack",
+    "nextjs"
+  ],
+  "repository": "git@git.dev.sh.ctripcorp.com:corp-rust/plugin-transform.git",
+  "main": "swc_plugin_transform_import.wasm",
+  "scripts": {
+    "build": "npx pnpm i && cargo build --release --target wasm32-wasi && cpx ./target/wasm32-wasi/release/swc_plugin_transform_import.wasm .",
+    "update:swc-version-manifest": "tsx scripts/update_swc_version_manifest.mts"
+  },
+  "devDependencies": {
+    "cpx2": "^5.0.0"
+  },
+  "files": [
+    "swc_plugin_another_transform_imports.wasm",
+    "src"
+  ],
+  "tripPublisher": "zerenzhang@trip.com"
+}

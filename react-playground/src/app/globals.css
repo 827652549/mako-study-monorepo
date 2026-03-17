@@ -1,21 +1,51 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* View Transition 核心样式 */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 整体页面淡入淡出 */
+::view-transition-old(root) {
+  animation: fade-out 0.3s ease forwards;
+}
+::view-transition-new(root) {
+  animation: fade-in 0.3s ease forwards;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+/* 命名元素动画 - 旧元素（离开） */
+::view-transition-old(block-1),
+::view-transition-old(block-2),
+::view-transition-old(block-3),
+::view-transition-old(block-4),
+::view-transition-old(block-5),
+::view-transition-old(block-6) {
+  animation: scale-out 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 命名元素动画 - 新元素（进入） */
+::view-transition-new(block-1),
+::view-transition-new(block-2),
+::view-transition-new(block-3),
+::view-transition-new(block-4),
+::view-transition-new(block-5),
+::view-transition-new(block-6) {
+  animation: scale-in 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes scale-out {
+  to {
+    transform: scale(2);
+    opacity: 0;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes scale-in {
+  from {
+    transform: scale(0.1);
+    opacity: 0;
+  }
 }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>alert-dome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .alert-box {
+            border: 1px solid red;
+            width: 200px;
+            height: 100px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+点击任意位置出弹框
+<div class="alert-box" id="alert-box" hidden="">弹框
+    <button id="close">关闭</button>
+</div>
+<script>
+    window.onload = () => {
+        const alertBox = document.querySelector('#alert-box');
+        document.addEventListener('click', e => {
+            if (alertBox.contains(e.target)) {
+                return;
+            }
+
+            const clientX = e.clientX, clientY = e.clientY;
+            console.log(clientX, clientY)
+            alertBox.style.top = clientY + 'px';
+            alertBox.style.left = clientX + 'px';
+            alertBox.removeAttribute('hidden');
+        })
+        document.getElementById('close').addEventListener('click', function (e) {
+            alertBox.setAttribute('hidden', '');
+            e.stopPropagation()
+        })
+    }
+</script>
+</body>
+
+</html>

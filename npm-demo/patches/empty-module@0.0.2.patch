@@ -1,0 +1,7 @@
+diff --git a/index.js b/index.js
+index 7209432a9522ed4556fe8a90cabf8ec626c17620..05f82f0fb7a6b3805730155991cb28e82f452451 100644
+--- a/index.js
++++ b/index.js
+@@ -1 +1,2 @@
++console.log('mako pnpm patch modified~~~')
+ module.exports = null
