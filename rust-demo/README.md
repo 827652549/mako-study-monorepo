@@ -6,6 +6,7 @@
 npm install --save-dev @ctrip/swc-plugin-transform-import
 ```
 
+3
 ## Usage
 
 
