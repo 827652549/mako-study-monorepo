@@ -1,5 +1,6 @@
 'use client'
-import { useState, useCallback, useRef, useLayoutEffect } from 'react'
+import { useState, useCallback, useRef, useLayoutEffect, useEffect } from 'react'
+import CountComponent from '@/app/playground/page'
 
 const products = [
   { id: 1, emoji: '⌚', name: 'Minimal Watch', price: '¥2,890', bg: 'linear-gradient(135deg,#667eea,#764ba2)', tag: 'NEW ARRIVAL', desc: 'A minimalist design with premium materials. Features sapphire crystal, Swiss movement, and 50m water resistance.' },
@@ -16,7 +17,12 @@ export default function ListPage() {
   const detailViewRef = useRef<HTMLDivElement>(null)
 
   const selectedProduct = products.find(p => p.id === selectedId)
-
+  const [ isShow, setIsShow ] = useState(false)
+  useEffect(()=>{
+    setTimeout(()=>{
+      setIsShow(true)
+    },3000)
+  },[])
   // 使用 useLayoutEffect 来处理 View Transition
   useLayoutEffect(() => {
     // 如果没有 View Transition API，直接返回
@@ -96,6 +102,11 @@ export default function ListPage() {
 
   return (
     <div style={{ background: '#111', minHeight: '100vh', padding: 32, color: '#f0ede8' }}>
+      <CountComponent/>
+      {
+        isShow && <CountComponent/>
+      }
+
       {/* 列表视图 */}
       <div ref={listViewRef} style={{ visibility: selectedId ? 'hidden' : 'visible', position: selectedId ? 'absolute' : 'static' }}>
         <h1 style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', color: '#555', marginBottom: 24 }}>

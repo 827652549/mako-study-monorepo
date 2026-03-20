@@ -7,6 +7,7 @@ specifiers:
   '@types/react-dom': ^19
   eslint: ^9
   eslint-config-next: 15.1.6
+  eslint-plugin-react-hooks: 5.2.0
   framer-motion: ^12.36.0
   lodash: ^4.17.23
   next: 15.1.6
@@ -30,6 +31,7 @@ devDependencies:
   '@types/react-dom': 19.2.3_@types+react@19.2.14
   eslint: 9.39.4
   eslint-config-next: 15.1.6_hszckgzgst4ngbfmk3puyacue4
+  eslint-plugin-react-hooks: 5.2.0_eslint@9.39.4
   postcss: 8.5.8
   tailwindcss: 3.4.19
   typescript: 5.9.3
