@@ -16,7 +16,6 @@ export default function ListPage() {
   const listViewRef = useRef<HTMLDivElement>(null)
   const detailViewRef = useRef<HTMLDivElement>(null)
 
-  const selectedProduct = products.find(p => p.id === selectedId)
   const [ isShow, setIsShow ] = useState(false)
   useEffect(()=>{
     setTimeout(()=>{

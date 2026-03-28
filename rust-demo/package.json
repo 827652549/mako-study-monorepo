@@ -1,32 +1,27 @@
 {
-  "name": "@ctrip/swc-plugin-transform-import",
+  "name": "swc-plugin-transform-import",
   "version": "1.0.0",
-  "description": "swc transform import plugin",
-  "license": "MIT",
-  "keywords": [
-    "swc-plugin",
-    "swc",
-    "transform",
-    "import",
-    "wasm",
-    "wasi",
-    "rust",
-    "webassembly",
-    "webpack",
-    "nextjs"
-  ],
-  "repository": "git@git.dev.sh.ctripcorp.com:corp-rust/plugin-transform.git",
-  "main": "swc_plugin_transform_import.wasm",
+  "description": "SWC plugin for transforming import paths",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "npx pnpm i && cargo build --release --target wasm32-wasi && cpx ./target/wasm32-wasi/release/swc_plugin_transform_import.wasm .",
-    "update:swc-version-manifest": "tsx scripts/update_swc_version_manifest.mts"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "swc",
+    "plugin",
+    "transform",
+    "import"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@swc/core": "^1.3.0"
   },
   "devDependencies": {
-    "cpx2": "^5.0.0"
-  },
-  "files": [
-    "swc_plugin_another_transform_imports.wasm",
-    "src"
-  ],
-  "tripPublisher": "zerenzhang@trip.com"
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
 }

@@ -1,13 +1,7 @@
 'use client'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
-
-const usePrevious = (state) => {
-  const ref = useRef(undefined)
-  useEffect(() => {
-    ref.current = state
-  })
-  return ref.current
-}
+import { useEffect, useRef, useState } from 'react'
+import SearchContainer from '@/features/search/components/SearchContainer'
+import { SEARCH_MOCK_DATA } from '@/features/search/mockData'
 
 const CountComponent = () => {
   const [ name, setName ] = useState('tom')
@@ -26,23 +20,6 @@ const CountComponent = () => {
     }
   }, [])
 
-  const { items } = useContext(ShoppingCartContext)
-  const url = ''
-  const numberOfItems = items.length
-
-  function APage() {
-    const onNavigate = useEffectEvent((visitedUrl) => {
-      logVisit(visitedUrl, numberOfItems)
-    })
-
-    useEffect(() => {
-      onNavigate(url)
-    }, [ url ])
-
-    //...
-  }
-
-
   return (<div>
     <button onClick={ () => {
       setName('mako')
@@ -54,4 +31,16 @@ const CountComponent = () => {
     </div>
   </div>)
 }
-export default CountComponent
+
+export default function PlaygroundPage() {
+  return (
+    <div className="space-y-6 p-6">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">React Playground</h1>
+        <CountComponent />
+      </div>
+      <hr className="border-gray-200" />
+      <SearchContainer data={SEARCH_MOCK_DATA} />
+    </div>
+  )
+}
