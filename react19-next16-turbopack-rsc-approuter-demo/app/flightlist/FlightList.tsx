@@ -1,29 +1,35 @@
 'use client'
 
-import { use, useEffect, useRef } from 'react'
+import { use, useRef } from 'react'
 import { ViewportList } from '@/app/flightlist/lib'
 
-const fetchSearchFlightList = async () => {
-  return new Promise<number[]>((r) => {
-    setTimeout(() => {
-      r([ 2, 4, 5, 8, 9, 67 ])
-    }, 3000)
-  })
-}
-// const promise = fetchSearchFlightList()
-const FlightList = () => {
+const FlightList = ({flightIdsPromise}) => {
+  const flightIds = use<number[]>(flightIdsPromise);
   const ref = useRef<HTMLDivElement | null>(
     null,
   )
 
-  const flightIds = use(fetchSearchFlightList())
   const ssrRender = <>
-    { flightIds.map(e => <div key={ e }>{ e }---航班</div>) }
+    { flightIds?.map(e => <div key={ e }>{ e }---航班</div>) }
   </>
 
-  const virtualListRender = <ViewportList viewportRef={ ref } items={flightIds}>{
-    (flt, index) => <div>{ flt } + { index }</div>
-  }</ViewportList>
+  const virtualListRender = <div
+    ref={ref}
+    style={{
+      height: '200px',
+      overflow: 'auto',
+      border: '1px solid #ccc'
+    }}
+  >
+    <ViewportList
+      viewportRef={ ref }
+      items={flightIds}
+      // itemSize={66}
+      // overscan={1}
+    >
+      {(flt, index) => <div style={{ height: '50px', padding: '8px' }} key={index}>{ flt } + { index }</div>}
+    </ViewportList>
+  </div>
 
   // useEffect(() => {
   //
