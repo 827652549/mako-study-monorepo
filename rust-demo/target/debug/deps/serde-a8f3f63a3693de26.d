@@ -1,0 +1,14 @@
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/deps/serde-a8f3f63a3693de26.d: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/build/serde-8058c9db5f0cfdf6/out/private.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/deps/libserde-a8f3f63a3693de26.rlib: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/build/serde-8058c9db5f0cfdf6/out/private.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/deps/libserde-a8f3f63a3693de26.rmeta: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/build/serde-8058c9db5f0cfdf6/out/private.rs
+
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/build/serde-8058c9db5f0cfdf6/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/build/serde-8058c9db5f0cfdf6/out

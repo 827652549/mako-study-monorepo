@@ -1,0 +1,28 @@
+[package]
+name = "swc_plugin_transform_import"
+version = "1.0.0"
+edition = "2021"
+description = "swc transform import plugin"
+license = "MIT"
+repository = "git@git.dev.sh.ctripcorp.com:corp-rust/plugin-transform.git"
+
+[lib]
+crate-type = ["cdylib"]
+
+# 使用 swc 官方最新版本（已修复所有兼容性问题）
+[dependencies]
+swc_core = { git = "https://github.com/swc-project/swc.git", branch = "main", features = ["__ecma", "ecma_ast", "__visit"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+voca_rs = "1.15"
+tracing = "0.1"
+lazy_static = "1.4"
+
+[dev-dependencies]
+maplit = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+

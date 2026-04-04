@@ -1,0 +1,8 @@
+{
+  "index.tsx -> ./components/FlightList": {
+    "id": "index.tsx -> ./components/FlightList",
+    "files": [
+      "static/chunks/pages_components_FlightList_tsx.js"
+    ]
+  }
+}

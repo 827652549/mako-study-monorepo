@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>练习2：fetch + SSE（POST）</title>
+  <style>
+    body { font-family: monospace; padding: 24px; background: #1a1a1a; color: #e0e0e0; }
+    h2 { color: #7ec8e3; }
+    .card { background: #2a2a2a; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .label { color: #888; font-size: 12px; margin-bottom: 6px; }
+    pre { margin: 0; white-space: pre-wrap; word-break: break-all; font-size: 13px; }
+    .event { padding: 4px 8px; margin: 2px 0; border-radius: 4px; font-size: 13px; }
+    .event-begin { background: #1a3a1a; color: #7ec87e; }
+    .event-text  { background: #1a2a3a; color: #7ec8e3; }
+    .event-type  { background: #3a2a1a; color: #e3c87e; }
+    .event-end   { background: #3a1a1a; color: #e37e7e; }
+    .event-error { background: #3a1a3a; color: #e37ec8; }
+    button { background: #7ec8e3; color: #1a1a1a; border: none; padding: 8px 20px;
+             border-radius: 6px; cursor: pointer; font-weight: bold; }
+    button:hover { opacity: 0.85; }
+    .tip { color: #888; font-size: 12px; margin-top: 8px; }
+    .diff { color: #e3c87e; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h2>练习 2 · fetch + SSE（POST + body）</h2>
+
+<div class="card">
+  <div class="label">与原生 EventSource 的核心区别</div>
+  <pre>
+原生 EventSource          fetch + ReadableStream
+─────────────────────────────────────────────────
+只支持 GET               <span class="diff">支持任意 HTTP 方法</span>
+无法携带 body            <span class="diff">可以发送 JSON body</span>
+无法自定义 Header        <span class="diff">可以自定义任意 Header</span>
+浏览器自动重连           需要手动实现重连逻辑
+
+SSE 协议格式（服务端返回的 text/event-stream）：
+  event: message_text\n
+  data: {"text":"好的，"}\n
+  \n                      ← 空行 = 一帧结束
+  </pre>
+</div>
+
+<div class="card">
+  <div class="label">操作</div>
+  <button id="btnSend">发送消息（POST）</button>
+  <span class="tip">需先启动 server.js</span>
+</div>
+
+<div class="card">
+  <div class="label">收到的事件流</div>
+  <div id="output"></div>
+</div>
+
+<div class="card">
+  <div class="label">核心原理：手动解析 SSE 帧</div>
+  <pre>
+// SSE 协议：多行构成一帧，空行分割帧
+// 例如一帧原始文本：
+//   "event: message_text\ndata: {\"text\":\"好的，\"}\n\n"
+
+function parseSseChunk(rawText) {
+  const frames = rawText.split('\n\n').filter(Boolean);
+  return frames.map(frame => {
+    const lines = frame.split('\n');
+    const result = {};
+    lines.forEach(line => {
+      if (line.startsWith('event:')) result.event = line.slice(6).trim();
+      if (line.startsWith('data:'))  result.data  = line.slice(5).trim();
+    });
+    return result;
+  });
+}
+  </pre>
+</div>
+
+<script>
+const output = document.getElementById('output');
+
+/**
+ * ★ 核心函数：用 fetch 消费 SSE 流
+ *
+ * 关键步骤：
+ *   1. fetch POST，携带 body
+ *   2. response.body 是 ReadableStream
+ *   3. 用 TextDecoder 把二进制 chunk 转字符串
+ *   4. 手动解析 SSE 格式（event: xxx\ndata: xxx\n\n）
+ */
+async function fetchSSE({ url, body, onMessage, onClose, onError }) {
+  let response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    onError(err);
+    return;
+  }
+
+  if (!response.ok) {
+    onError(new Error(`HTTP ${response.status}`));
+    return;
+  }
+
+  // response.body 是 ReadableStream<Uint8Array>
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  // buffer 用来拼接跨 chunk 的不完整帧
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      // 将二进制 chunk 解码为字符串，并追加到 buffer
+      buffer += decoder.decode(value, { stream: true });
+
+      // 按 '\n\n'（SSE 帧分隔符）分割
+      const parts = buffer.split('\n\n');
+      // 最后一段可能是不完整帧，留在 buffer
+      buffer = parts.pop();
+
+      for (const part of parts) {
+        if (!part.trim()) continue;
+        const frame = parseSseFrame(part);
+        if (frame.event && frame.data) {
+          onMessage(frame);
+        }
+      }
+    }
+  } catch (err) {
+    onError(err);
+    return;
+  }
+
+  onClose();
+}
+
+/**
+ * 解析单个 SSE 帧文本为 { event, data }
+ * 输入示例："event: message_text\ndata: {\"text\":\"好的，\"}"
+ */
+function parseSseFrame(frameText) {
+  const result = {};
+  frameText.split('\n').forEach(line => {
+    if (line.startsWith('event:')) result.event = line.slice(6).trim();
+    if (line.startsWith('data:'))  result.data  = line.slice(5).trim();
+  });
+  return result;
+}
+
+// ─────────────────────────────────────────────
+// 调用
+// ─────────────────────────────────────────────
+document.getElementById('btnSend').addEventListener('click', async () => {
+  output.innerHTML = '';
+
+  await fetchSSE({
+    url: 'http://localhost:3099/sse/chat',
+    body: { question: '推荐一下北京到上海的航班', chatId: undefined },
+
+    onMessage: ({ event, data }) => {
+      try {
+        const parsed = JSON.parse(data);
+        const content = event === 'message_text'
+          ? `"${parsed.text}"`
+          : JSON.stringify(parsed);
+        appendEvent(event, content);
+      } catch {
+        appendEvent(event, data);
+      }
+    },
+
+    onClose: () => appendEvent('closed', '流已结束'),
+    onError: (err) => appendEvent('error', err.message),
+  });
+});
+
+function appendEvent(type, content) {
+  const div = document.createElement('div');
+  const cls = type.includes('begin') ? 'begin'
+    : type.includes('text') ? 'text'
+    : type.includes('type') ? 'type'
+    : type.includes('end') ? 'end'
+    : 'error';
+  div.className = `event event-${cls}`;
+  div.textContent = `[${type}]  ${content}`;
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

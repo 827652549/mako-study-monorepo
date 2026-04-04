@@ -1,0 +1,11 @@
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/stfu8-38ad6c7a5769c5b1.d: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/decode.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u16.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u8.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/helpers.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/libstfu8-38ad6c7a5769c5b1.rlib: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/decode.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u16.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u8.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/helpers.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/libstfu8-38ad6c7a5769c5b1.rmeta: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/decode.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u16.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u8.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/helpers.rs
+
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/lib.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/decode.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u16.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/encode_u8.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stfu8-0.2.7/src/helpers.rs:

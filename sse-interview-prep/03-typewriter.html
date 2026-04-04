@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>练习3：打字机效果</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 24px; background: #1a1a1a; color: #e0e0e0; }
+    h2 { color: #7ec8e3; }
+    .card { background: #2a2a2a; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .label { color: #888; font-size: 12px; margin-bottom: 8px; }
+    pre { margin: 0; white-space: pre-wrap; font-size: 12px; }
+    button { background: #7ec8e3; color: #1a1a1a; border: none; padding: 8px 20px;
+             border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 8px; }
+    button:hover { opacity: 0.85; }
+    .tip { color: #888; font-size: 12px; margin-top: 8px; }
+
+    /* ── 消息气泡 ── */
+    .chat-bubble {
+      background: #2a3a4a; border-radius: 12px; padding: 12px 16px;
+      line-height: 1.7; font-size: 15px; max-width: 480px;
+      margin: 8px 0;
+    }
+    /* ── 打字机光标 ── */
+    .cursor {
+      display: inline-block;
+      width: 2px; height: 1em;
+      background: #7ec8e3;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    /* ── 三点 loading ── */
+    .loading-dots span {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%; background: #7ec8e3;
+      margin: 0 2px;
+      animation: bounce 1.2s infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+  </style>
+</head>
+<body>
+
+<h2>练习 3 · 打字机效果</h2>
+
+<div class="card">
+  <div class="label">两种打字机方案对比</div>
+  <pre>
+方案A：直接追加（项目实际用法）
+  每收到一个 message_text 帧，直接 text += fragment
+  优点：实时感强，不需要额外队列
+  适用：SSE 服务端本身控制推送节奏（300ms/帧）
+
+方案B：本地队列逐字播放
+  收到完整文本后，用 setInterval 每 N ms 显示一个字
+  优点：节奏均匀，可控
+  适用：一次性收到完整数据（如 WebSocket 一次推送全文）
+
+项目里用的是方案A，因为 SSE 帧本身就是按节奏分发的。
+  </pre>
+</div>
+
+<div class="card">
+  <div class="label">演示</div>
+  <button id="btnA">方案A：追加（项目实现）</button>
+  <button id="btnB">方案B：队列逐字</button>
+  <span class="tip">需先启动 server.js</span>
+</div>
+
+<div class="card">
+  <div class="label">效果预览</div>
+  <div id="status" style="color:#888;font-size:13px;margin-bottom:8px;">等待发送...</div>
+  <div id="bubble" class="chat-bubble" style="display:none"></div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────
+// 方案A：直接追加（复现项目里的 message_text 处理逻辑）
+// ──────────────────────────────────────────────────────────
+
+async function demoA() {
+  const bubble = document.getElementById('bubble');
+  const status = document.getElementById('status');
+  bubble.style.display = '';
+  bubble.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  status.textContent = '等待 AI 响应...';
+
+  let accumulatedText = '';  // 对应项目里 item.aiMessage.text
+  let isFirstText = true;
+
+  const response = await fetch('http://localhost:3099/sse/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: '推荐航班' }),
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop();
+
+    for (const part of parts) {
+      const frame = parseSseFrame(part);
+      if (!frame.event) continue;
+
+      if (frame.event === 'message_begin') {
+        status.textContent = 'AI 正在回复...';
+      }
+
+      if (frame.event === 'message_text') {
+        const { text } = JSON.parse(frame.data);
+
+        if (isFirstText) {
+          // 收到第一个文字帧：清掉 loading dots
+          bubble.innerHTML = '';
+          isFirstText = false;
+        }
+
+        // ★ 核心：直接追加文字 + 光标
+        // 对应项目代码：text: item.aiMessage?.text + data?.text
+        accumulatedText += text;
+        bubble.innerHTML = escapeHtml(accumulatedText) + '<span class="cursor"></span>';
+      }
+
+      if (frame.event === 'message_end') {
+        // 流结束：移除光标
+        bubble.innerHTML = escapeHtml(accumulatedText);
+        status.textContent = '✅ 回复完成';
+      }
+    }
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// 方案B：队列逐字播放（一次性数据场景）
+// ──────────────────────────────────────────────────────────
+
+async function demoB() {
+  const bubble = document.getElementById('bubble');
+  const status = document.getElementById('status');
+  bubble.style.display = '';
+  bubble.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  status.textContent = '收集完整文本中...';
+
+  // 先收集完整文本
+  let fullText = '';
+  const response = await fetch('http://localhost:3099/sse/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: '推荐航班' }),
+  });
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop();
+    for (const part of parts) {
+      const frame = parseSseFrame(part);
+      if (frame.event === 'message_text') {
+        const { text } = JSON.parse(frame.data);
+        fullText += text;
+      }
+    }
+  }
+
+  // ★ 核心：逐字播放
+  status.textContent = '逐字显示中...';
+  bubble.innerHTML = '<span class="cursor"></span>';
+  let i = 0;
+  const chars = Array.from(fullText); // 支持 emoji / 中文多字节
+
+  const timer = setInterval(() => {
+    if (i >= chars.length) {
+      clearInterval(timer);
+      bubble.innerHTML = escapeHtml(fullText);
+      status.textContent = '✅ 回复完成';
+      return;
+    }
+    // 每次显示一个字
+    const displayed = chars.slice(0, ++i).join('');
+    bubble.innerHTML = escapeHtml(displayed) + '<span class="cursor"></span>';
+  }, 60); // 60ms/字
+}
+
+// ──────────────────────────────────────────────────────────
+// 工具函数
+// ──────────────────────────────────────────────────────────
+function parseSseFrame(frameText) {
+  const result = {};
+  frameText.split('\n').forEach(line => {
+    if (line.startsWith('event:')) result.event = line.slice(6).trim();
+    if (line.startsWith('data:'))  result.data  = line.slice(5).trim();
+  });
+  return result;
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+document.getElementById('btnA').addEventListener('click', demoA);
+document.getElementById('btnB').addEventListener('click', demoB);
+</script>
+</body>
+</html>

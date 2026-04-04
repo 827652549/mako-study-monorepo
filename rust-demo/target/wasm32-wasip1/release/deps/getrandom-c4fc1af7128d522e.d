@@ -1,0 +1,11 @@
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/getrandom-c4fc1af7128d522e.d: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/util.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error_impls.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/wasi.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/libgetrandom-c4fc1af7128d522e.rlib: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/util.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error_impls.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/wasi.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/wasm32-wasip1/release/deps/libgetrandom-c4fc1af7128d522e.rmeta: /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/lib.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/util.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error_impls.rs /Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/wasi.rs
+
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/lib.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/util.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/error_impls.rs:
+/Users/mako/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/src/wasi.rs:

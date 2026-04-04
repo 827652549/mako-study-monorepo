@@ -1,0 +1,11 @@
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/deps/ast_node-ebe3f9575bda407b.d: /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/lib.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/ast_node_macro.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/mod.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/decode.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/encode.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/enum_deserialize.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/spanned.rs
+
+/Users/mako/WebstormProjects/mako-study-monorepo/rust-demo/target/debug/deps/libast_node-ebe3f9575bda407b.dylib: /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/lib.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/ast_node_macro.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/mod.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/decode.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/encode.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/enum_deserialize.rs /Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/spanned.rs
+
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/lib.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/ast_node_macro.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/mod.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/decode.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/encoding/encode.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/enum_deserialize.rs:
+/Users/mako/.cargo/git/checkouts/swc-d827c3033bef357e/0ace449/crates/ast_node/src/spanned.rs:

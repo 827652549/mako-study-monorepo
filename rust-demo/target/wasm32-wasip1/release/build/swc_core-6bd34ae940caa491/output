@@ -1,0 +1,8 @@
+cargo:rustc-env=VERGEN_CARGO_DEBUG=false
+cargo:rustc-env=VERGEN_CARGO_FEATURES=
+cargo:rustc-env=VERGEN_CARGO_OPT_LEVEL=3
+cargo:rustc-env=VERGEN_CARGO_TARGET_TRIPLE=wasm32-wasip1
+cargo:rustc-env=VERGEN_CARGO_DEPENDENCIES=anyhow 1.0.102,vergen 8.3.2
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-env-changed=VERGEN_IDEMPOTENT
+cargo:rerun-if-env-changed=SOURCE_DATE_EPOCH

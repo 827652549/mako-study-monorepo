@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>练习4：stale closure + useLatestState</title>
+  <!-- React + ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel for JSX in browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: monospace; padding: 24px; background: #1a1a1a; color: #e0e0e0; }
+    h2 { color: #7ec8e3; }
+    .card { background: #2a2a2a; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .label { color: #888; font-size: 12px; margin-bottom: 8px; }
+    pre { margin: 0; white-space: pre-wrap; font-size: 12px; line-height: 1.6; }
+    .row { display: flex; gap: 16px; }
+    .col { flex: 1; }
+    .demo-box { background: #1a1a2a; border-radius: 8px; padding: 16px; }
+    .demo-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+    .broken { color: #e37e7e; }
+    .fixed  { color: #7ec87e; }
+    .msg-item { padding: 3px 8px; margin: 2px 0; border-radius: 4px;
+                background: #2a3a4a; font-size: 13px; }
+    button { background: #7ec8e3; color: #1a1a1a; border: none; padding: 6px 14px;
+             border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    button:hover { opacity: 0.85; }
+    .highlight { color: #e3c87e; }
+    .badge-broken { background: #3a1a1a; color: #e37e7e; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+    .badge-fixed  { background: #1a3a1a; color: #7ec87e; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  </style>
+</head>
+<body>
+
+<h2>练习 4 · 异步闭包 stale state 问题</h2>
+
+<div class="card">
+  <div class="label">问题根因</div>
+  <pre>
+React 的 useState 每次 render 产生新的 state 快照。
+当你在 <span class="highlight">异步回调（setTimeout / SSE onmessage / Promise.then）</span> 中读取 state，
+读到的是 <span class="highlight">回调被创建时</span> 的那个快照（已过期的旧值），而不是最新值。
+
+这个现象叫 <span class="highlight">stale closure（陈旧闭包）</span>。
+
+在 SSE 场景中：
+  sendMessage() 创建了 onmessage 回调 → 闭包捕获了当时的 messageList（比如 []）
+  500ms 后第一帧来了 → onmessage 读到的 messageList 还是 []
+  300ms 后第二帧来了 → onmessage 读到的 messageList 仍然是 []（!）
+  结果：每帧都在空列表上追加，只保留最后一帧
+  </pre>
+</div>
+
+<div id="root"></div>
+
+<div class="card">
+  <div class="label">useLatestState 原理（项目里的解法）</div>
+  <pre>
+// ─── 项目源码 ───
+export const useLatestState = (initialValue) => {
+  const [state, setState] = useState(initialValue);
+  const stateRef = useRef(initialValue);        // ref 不受 render 影响
+
+  const updateState = (value) => {
+    stateRef.current = value;   // ← 同步更新 ref（永远是最新值）
+    setState(value);            // ← 触发 re-render
+  };
+
+  return [state, updateState, stateRef];
+};
+
+// ─── 在 SSE onmessage 中使用 ───
+const [messageList, setMessageList, messageListRef] = useLatestState([]);
+
+const onmessage = (frame) => {
+  // ✅ 读用 ref（永远最新），写用 setState（触发渲染）
+  const newList = messageListRef.current.map(item => ...);
+  setMessageList(newList);
+};
+
+// ─── 其他解法（了解即可）───
+// 方案2：useState 的函数式更新
+//   setMessageList(prev => prev.map(item => ...));
+//   缺点：无法在回调外部读取最新值
+//
+// 方案3：useReducer（dispatch 不受闭包影响）
+//   更适合状态逻辑复杂的场景
+  </pre>
+</div>
+
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+// ──────────────────────────────────────────────
+// 复现 useLatestState（项目实现）
+// ──────────────────────────────────────────────
+function useLatestState(initialValue) {
+  const [state, setState] = useState(initialValue);
+  const stateRef = useRef(initialValue);
+  const updateState = (value) => {
+    stateRef.current = value;  // 同步更新 ref
+    setState(value);           // 触发 re-render
+  };
+  return [state, updateState, stateRef];
+}
+
+// ──────────────────────────────────────────────
+// 模拟 SSE：每 400ms 推送一帧
+// ──────────────────────────────────────────────
+function mockSSE(onmessage) {
+  const frames = ['帧1', '帧2', '帧3', '帧4', '帧5'];
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= frames.length) { clearInterval(timer); return; }
+    onmessage(frames[i++]);
+  }, 400);
+  return () => clearInterval(timer);
+}
+
+// ──────────────────────────────────────────────
+// ❌ 有问题的版本：直接读 state（stale closure）
+// ──────────────────────────────────────────────
+function BrokenDemo() {
+  const [messages, setMessages] = useState([]);
+  const [running, setRunning] = useState(false);
+
+  const startSSE = () => {
+    if (running) return;
+    setRunning(true);
+    setMessages([]); // 重置
+
+    // ❌ onmessage 闭包捕获了 messages（此时是 []）
+    // 之后无论 state 怎么更新，onmessage 看到的 messages 永远是 []
+    const onmessage = (frame) => {
+      console.log('[broken] 闭包里的 messages 长度:', messages.length); // 永远是 0！
+      setMessages([...messages, frame]); // 每次都是 [] + frame
+    };
+
+    const cleanup = mockSSE(onmessage);
+    setTimeout(() => { cleanup(); setRunning(false); }, 3000);
+  };
+
+  return (
+    <div className="demo-box">
+      <div className="demo-title broken">
+        ❌ 有问题的版本 <span className="badge-broken">stale closure</span>
+      </div>
+      <div style={{marginBottom: 8}}>
+        <button onClick={startSSE} disabled={running}>
+          {running ? '接收中...' : '开始 SSE'}
+        </button>
+        <span style={{color:'#888', fontSize:12, marginLeft:8}}>
+          期望5条，实际只有1条
+        </span>
+      </div>
+      {messages.map((m, i) => (
+        <div key={i} className="msg-item">{m}</div>
+      ))}
+      {messages.length === 0 && <div style={{color:'#666', fontSize:12}}>（等待消息）</div>}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// ✅ 修复版本1：useLatestState（项目方案）
+// ──────────────────────────────────────────────
+function FixedDemoRef() {
+  const [messages, setMessages, messagesRef] = useLatestState([]);
+  const [running, setRunning] = useState(false);
+
+  const startSSE = () => {
+    if (running) return;
+    setRunning(true);
+    setMessages([]);
+
+    // ✅ 读 ref（永远最新），写 setState（触发渲染）
+    const onmessage = (frame) => {
+      console.log('[fixed-ref] ref 里的长度:', messagesRef.current.length); // 正确递增
+      setMessages([...messagesRef.current, frame]);
+    };
+
+    const cleanup = mockSSE(onmessage);
+    setTimeout(() => { cleanup(); setRunning(false); }, 3000);
+  };
+
+  return (
+    <div className="demo-box">
+      <div className="demo-title fixed">
+        ✅ 修复方案1：useLatestState <span className="badge-fixed">项目实现</span>
+      </div>
+      <div style={{marginBottom: 8}}>
+        <button onClick={startSSE} disabled={running}>
+          {running ? '接收中...' : '开始 SSE'}
+        </button>
+      </div>
+      {messages.map((m, i) => (
+        <div key={i} className="msg-item">{m}</div>
+      ))}
+      {messages.length === 0 && <div style={{color:'#666', fontSize:12}}>（等待消息）</div>}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// ✅ 修复版本2：函数式更新（更简洁）
+// ──────────────────────────────────────────────
+function FixedDemoFunctional() {
+  const [messages, setMessages] = useState([]);
+  const [running, setRunning] = useState(false);
+
+  const startSSE = () => {
+    if (running) return;
+    setRunning(true);
+    setMessages([]);
+
+    // ✅ 函数式更新：React 把最新 state 作为参数传入，绕过闭包
+    const onmessage = (frame) => {
+      setMessages(prev => [...prev, frame]); // prev 永远是最新值
+    };
+
+    const cleanup = mockSSE(onmessage);
+    setTimeout(() => { cleanup(); setRunning(false); }, 3000);
+  };
+
+  return (
+    <div className="demo-box">
+      <div className="demo-title fixed">
+        ✅ 修复方案2：函数式更新 <span className="badge-fixed">setMessages(prev =&gt; ...)</span>
+      </div>
+      <div style={{marginBottom: 8}}>
+        <button onClick={startSSE} disabled={running}>
+          {running ? '接收中...' : '开始 SSE'}
+        </button>
+        <span style={{color:'#888', fontSize:12, marginLeft:8}}>
+          缺点：无法在回调外部读取最新值
+        </span>
+      </div>
+      {messages.map((m, i) => (
+        <div key={i} className="msg-item">{m}</div>
+      ))}
+      {messages.length === 0 && <div style={{color:'#666', fontSize:12}}>（等待消息）</div>}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// 主页面
+// ──────────────────────────────────────────────
+function App() {
+  return (
+    <div>
+      <div className="card">
+        <div className="label">三个 Demo 对比（点击「开始 SSE」分别观察效果）</div>
+        <div className="row">
+          <div className="col"><BrokenDemo /></div>
+          <div className="col"><FixedDemoRef /></div>
+          <div className="col"><FixedDemoFunctional /></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
