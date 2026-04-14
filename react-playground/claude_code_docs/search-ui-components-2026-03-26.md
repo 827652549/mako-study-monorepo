@@ -145,7 +145,7 @@
 
 ## 文件导出
 
-**文件**: `src/features/search/components/index.ts`
+**文件**: `src/features/search/components/index.js`
 
 导出所有 5 个组件的默认导出，便于统一导入：
 

@@ -18,5 +18,5 @@
 
 ## 4. 导出与集成
 
-- [x] 4.1 创建 `src/components/SearchInput/index.ts` 导出组件
+- [x] 4.1 创建 `src/components/SearchInput/index.js` 导出组件
 - [x] 4.2 在 Demo 页面中引入 `SearchInput`，展示受控模式 + loading 状态的使用示例

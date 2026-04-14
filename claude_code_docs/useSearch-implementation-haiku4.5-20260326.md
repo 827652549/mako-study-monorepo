@@ -150,7 +150,7 @@ useEffect(() => {
 
 ## 导出
 
-通过 `src/features/search/hooks/index.ts` 导出：
+通过 `src/features/search/hooks/index.js` 导出：
 ```typescript
 export { useSearch, splitTextIntoSegments, filterAndHighlight } from './useSearch'
 ```
@@ -185,5 +185,5 @@ export { useSearch, splitTextIntoSegments, filterAndHighlight } from './useSearc
 ## 文件列表
 
 - `/src/features/search/hooks/useSearch.ts` - 主实现文件
-- `/src/features/search/hooks/index.ts` - 导出索引
+- `/src/features/search/hooks/index.js` - 导出索引
 - `/src/features/search/hooks/useSearch.test.ts` - 测试用例示例

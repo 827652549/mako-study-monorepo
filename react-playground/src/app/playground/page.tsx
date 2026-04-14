@@ -1,46 +1,30 @@
-'use client'
-import { useEffect, useRef, useState } from 'react'
-import SearchContainer from '@/features/search/components/SearchContainer'
-import { SEARCH_MOCK_DATA } from '@/features/search/mockData'
-
-const CountComponent = () => {
-  const [ name, setName ] = useState('tom')
-  const countRef = useRef<number>(10)
-  const [ countState, setCountState ] = useState(countRef.current)
-  useEffect(() => {
-    const timer = setInterval(() => {
-      countRef.current = countRef.current - 1
-      setCountState(countRef.current)
-      if (countRef.current <= 0) {
-        clearInterval(timer)
-      }
-    }, 1000)
-    return () => {
-      clearInterval(timer)
-    }
-  }, [])
-
-  return (<div>
-    <button onClick={ () => {
-      setName('mako')
-    } }>切换tom为mako
-    </button>
-    <div>
-      <p>name:{ name }</p>
-      <p>count: { countState }</p>
-    </div>
-  </div>)
-}
-
-export default function PlaygroundPage() {
-  return (
-    <div className="space-y-6 p-6">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">React Playground</h1>
-        <CountComponent />
-      </div>
-      <hr className="border-gray-200" />
-      <SearchContainer data={SEARCH_MOCK_DATA} />
-    </div>
-  )
-}
+// 'use client'
+// // 防抖
+// import { useCallback, useRef } from 'react'
+//
+// type AnyFunction = (...args: unknown[]) => unknown
+// type DebounceTypeHook = (fn: AnyFunction, delay: number) => AnyFunction
+// const useDebounce: DebounceTypeHook = (fn: AnyFunction, delay: number) => {
+//   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+//   const fnRef = useRef<AnyFunction>(undefined)
+//   fnRef.current = fn
+//   return useCallback(function (this: unknown, ...args) {
+//     clearTimeout(timerRef.current)
+//     timerRef.current = setTimeout(() => {
+//       fnRef?.current?.call(this, ...args)
+//     }, delay)
+//   }, [ delay ])
+// }
+//
+//
+// export default function TempComponent() {
+//   const fn = useDebounce(() => {
+//     console.log('log')
+//   }, 1000)
+//
+//   return <div>
+//     <div onClick={ fn }>点击</div>
+//     <div className>正</div>
+//   </div>
+//
+//

@@ -219,7 +219,7 @@ react-playground/
 │           ├── hooks/
 │           │   ├── useSearch.ts
 │           │   ├── useSearchHistory.ts
-│           │   └── index.ts
+│           │   └── index.js
 │           ├── types.ts
 │           └── mockData.ts
 ```

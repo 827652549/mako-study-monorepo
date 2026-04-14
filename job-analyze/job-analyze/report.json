@@ -1,0 +1,146 @@
+{
+  "date": "2026-04-14",
+  "keyword": "前端",
+  "platform": "前程无忧",
+  "sample": 100,
+  "skills": {
+    "Vue": {
+      "tags": 29,
+      "desc": 45,
+      "total": 74,
+      "pct": 74
+    },
+    "JavaScript": {
+      "tags": 39,
+      "desc": 25,
+      "total": 64,
+      "pct": 64
+    },
+    "React": {
+      "tags": 23,
+      "desc": 25,
+      "total": 48,
+      "pct": 48
+    },
+    "Webpack": {
+      "tags": 13,
+      "desc": 19,
+      "total": 32,
+      "pct": 32
+    },
+    "HTML5": {
+      "tags": 20,
+      "desc": 12,
+      "total": 32,
+      "pct": 32
+    },
+    "TypeScript": {
+      "tags": 4,
+      "desc": 23,
+      "total": 27,
+      "pct": 27
+    },
+    "CSS3": {
+      "tags": 1,
+      "desc": 25,
+      "total": 26,
+      "pct": 26
+    },
+    "Vite": {
+      "tags": 1,
+      "desc": 24,
+      "total": 25,
+      "pct": 25
+    },
+    "Node.js": {
+      "tags": 4,
+      "desc": 12,
+      "total": 16,
+      "pct": 16
+    },
+    "Angular": {
+      "tags": 6,
+      "desc": 9,
+      "total": 15,
+      "pct": 15
+    },
+    "小程序": {
+      "tags": 2,
+      "desc": 12,
+      "total": 14,
+      "pct": 14
+    },
+    "uni-app": {
+      "tags": 2,
+      "desc": 10,
+      "total": 12,
+      "pct": 12
+    },
+    "ECharts": {
+      "tags": 4,
+      "desc": 5,
+      "total": 9,
+      "pct": 9
+    },
+    "Pinia": {
+      "tags": 0,
+      "desc": 8,
+      "total": 8,
+      "pct": 8
+    },
+    "Vuex": {
+      "tags": 2,
+      "desc": 5,
+      "total": 7,
+      "pct": 7
+    },
+    "微前端": {
+      "tags": 0,
+      "desc": 6,
+      "total": 6,
+      "pct": 6
+    },
+    "Three.js": {
+      "tags": 0,
+      "desc": 4,
+      "total": 4,
+      "pct": 4
+    },
+    "Redux": {
+      "tags": 0,
+      "desc": 3,
+      "total": 3,
+      "pct": 3
+    },
+    "React Native": {
+      "tags": 0,
+      "desc": 2,
+      "total": 2,
+      "pct": 2
+    },
+    "Flutter": {
+      "tags": 0,
+      "desc": 2,
+      "total": 2,
+      "pct": 2
+    },
+    "Next.js": {
+      "tags": 0,
+      "desc": 2,
+      "total": 2,
+      "pct": 2
+    },
+    "Nuxt": {
+      "tags": 0,
+      "desc": 2,
+      "total": 2,
+      "pct": 2
+    },
+    "MobX": {
+      "tags": 0,
+      "desc": 1,
+      "total": 1,
+      "pct": 1
+    }
+  }
+}
