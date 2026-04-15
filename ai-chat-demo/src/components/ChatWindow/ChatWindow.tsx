@@ -83,6 +83,7 @@ export default function ChatWindow() {
           </div>
         )}
 
+        {/* 消息列表 */}
         {messages.map((msg) => (
           <div key={msg.messageId} className={styles.messageGroup}>
             {/* 用户消息 */}

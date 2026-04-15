@@ -39,8 +39,10 @@ app.post('/api/chat', async (req, res) => {
   console.log(`[SSE] 场景: ${name} | messageId: ${messageId} | question: "${question}"`);
 
   // 客户端断开时清理
+  // 注意：Node 24+ 中 req.on('close') 在 body 被消费后就立刻触发，
+  // 不能用来检测客户端真正断开；改用 res.on('close') 监听响应侧断开。
   let aborted = false;
-  req.on('close', () => {
+  res.on('close', () => {
     aborted = true;
     console.log(`[SSE] 客户端断开 | messageId: ${messageId}`);
   });

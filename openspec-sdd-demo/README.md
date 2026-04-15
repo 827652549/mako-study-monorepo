@@ -1,21 +1,21 @@
 # bun-react-template
 
-To install dependencies:
+安装依赖：
 
 ```bash
 bun install
 ```
 
-To start a development server:
+启动开发服务器：
 
 ```bash
 bun dev
 ```
 
-To run for production:
+生产环境运行：
 
 ```bash
 bun start
 ```
 
-This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+本项目使用 `bun init` 在 Bun v1.3.2 下创建。[Bun](https://bun.com) 是一个快速的全能 JavaScript 运行时。
