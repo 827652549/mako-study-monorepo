@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 播放器 Demo - MSE & dash.js</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 30px; }
+        .demo-section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .demo-section h2 { color: #666; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        video { width: 100%; max-width: 600px; background: #000; margin: 10px 0; border-radius: 4px; }
+        .controls { margin: 15px 0; }
+        button { padding: 10px 15px; margin-right: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #0056b3; }
+        .code-block { background: #f8f8f8; padding: 12px; border-left: 3px solid #007bff; margin: 10px 0; border-radius: 4px; font-family: monospace; font-size: 12px; color: #333; overflow-x: auto; }
+        .info { background: #e7f3ff; padding: 12px; border-radius: 4px; margin: 10px 0; color: #004085; }
+        .status { font-size: 12px; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Web 播放器学习 Demo</h1>
+
+        <!-- MSE Demo -->
+        <div class="demo-section">
+            <h2>1️⃣ Media Source Extensions (MSE) Demo</h2>
+            <div class="info">
+                <strong>MSE 是什么？</strong> 让浏览器动态接收和处理视频片段，不需要完整的视频文件。常用于 HLS/DASH 直播和点播。
+            </div>
+            <video id="mseVideo" controls></video>
+            <div class="controls">
+                <button onclick="playMSEDemo()">▶ 播放 MSE Demo</button>
+                <button onclick="stopMSEDemo()">⏹ 停止</button>
+            </div>
+            <div class="code-block">// MSE 核心 API
+const mediaSource = new MediaSource();
+const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E"');
+sourceBuffer.appendBuffer(arrayBuffer); // 添加视频片段
+            </div>
+            <div class="status" id="mseStatus">状态: 未启动</div>
+        </div>
+
+        <!-- dash.js Demo -->
+        <div class="demo-section">
+            <h2>2️⃣ dash.js Demo</h2>
+            <div class="info">
+                <strong>dash.js 是什么？</strong> 开源的 DASH (Dynamic Adaptive Streaming) 播放器，自动切换码率以适应网络条件。
+            </div>
+            <video id="dashVideo" controls style="width: 100%; max-width: 600px;">
+                <source src="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd" type="application/dash+xml">
+            </video>
+            <div class="controls">
+                <button onclick="playDashDemo()">▶ 播放公开 DASH 流</button>
+                <button onclick="changeDashQuality()">📊 切换清晰度</button>
+            </div>
+            <div class="code-block">// dash.js 使用
+const player = dashjs.MediaPlayer().create();
+player.initialize(videoElement, 'manifest.mpd', true);
+            </div>
+            <div class="status" id="dashStatus">状态: 未启动</div>
+        </div>
+
+        <!-- 核心概念对比 -->
+        <div class="demo-section">
+            <h2>📚 核心概念对比</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">特性</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">MSE</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">dash.js</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">抽象层级</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">低级 API</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">高级库（基于 MSE）</td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px; border: 1px solid #ddd;">学习难度</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">较高</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">较低</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">自动码率适应</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">需要自己实现</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">内置</td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px; border: 1px solid #ddd;">应用场景</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">直播、自定义播放器</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">快速集成 DASH 流</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 加载 dash.js -->
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <!-- 加载 mp4box 用于处理 MP4 文件 -->
+    <script src="https://ifl.github.io/mp4box.js/mp4box.all.min.js"></script>
+
+    <script src="mse-demo.js"></script>
+    <script src="dash-demo.js"></script>
+</body>
+</html>

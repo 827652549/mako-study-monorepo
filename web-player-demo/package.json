@@ -1,0 +1,23 @@
+{
+  "name": "web-player-demo",
+  "version": "1.0.0",
+  "description": "MSE (Media Source Extensions) & dash.js 学习 Demo",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -c-1 -o",
+    "serve": "http-server -c-1"
+  },
+  "keywords": [
+    "MSE",
+    "Media Source Extensions",
+    "dash.js",
+    "DASH",
+    "video",
+    "streaming"
+  ],
+  "author": "mako",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
