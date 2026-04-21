@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useRef, useLayoutEffect, useEffect } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import TempComponent from '@/app/playground/page'
 
 const products = [
@@ -16,80 +16,80 @@ export default function ListPage() {
   const listViewRef = useRef<HTMLDivElement>(null)
   const detailViewRef = useRef<HTMLDivElement>(null)
 
-  const [ isShow, setIsShow ] = useState(false)
-  useEffect(()=>{
-    setTimeout(()=>{
-      setIsShow(true)
-    },3000)
-  },[])
+  // const [ setIsShow ] = useState(false)
+  // useEffect(()=>{
+  //   setTimeout(()=>{
+  //     setIsShow(true)
+  //   },3000)
+  // },[])
   // 使用 useLayoutEffect 来处理 View Transition
-  useLayoutEffect(() => {
-    // 如果没有 View Transition API，直接返回
-    if (!document.startViewTransition) {
-      return
-    }
-
-    const goingToDetail = selectedId !== null
-
-    // 获取所有卡片元素
-    const listCardImages = listViewRef.current?.querySelectorAll<HTMLElement>('[data-transition-name]')
-    const detailCardImages = detailViewRef.current?.querySelectorAll<HTMLElement>('[data-transition-name]')
-
-    if (goingToDetail) {
-      // 进入详情页：
-      // 1. 在 View Transition 捕获前移除列表视图的 view-transition-name
-      listCardImages?.forEach(card => {
-        card.style.viewTransitionName = ''
-      })
-      // 2. 预先设置详情视图目标卡片的 view-transition-name
-      const targetCard = detailViewRef.current?.querySelector<HTMLElement>(`[data-transition-name="block-${selectedId}"]`)
-      if (targetCard) {
-        targetCard.style.viewTransitionName = `block-${selectedId}`
-      }
-    } else {
-      // 返回列表：
-      // 1. 在 View Transition 捕获前移除详情视图的 view-transition-name
-      detailCardImages?.forEach(card => {
-        card.style.viewTransitionName = ''
-      })
-      // 2. 恢复列表视图的 view-transition-name
-      listCardImages?.forEach(card => {
-        card.style.viewTransitionName = card.dataset.transitionName || ''
-      })
-    }
-
-    // 使用 requestAnimationFrame 确保 DOM 更新已经应用
-    requestAnimationFrame(() => {
-      const transition = document.startViewTransition(() => {
-        // 在 callback 中切换可见性
-        if (goingToDetail) {
-          // 显示详情视图，隐藏列表视图
-          if (detailViewRef.current) {
-            detailViewRef.current.style.visibility = 'visible'
-            detailViewRef.current.style.position = 'static'
-          }
-          if (listViewRef.current) {
-            listViewRef.current.style.visibility = 'hidden'
-            listViewRef.current.style.position = 'absolute'
-          }
-        } else {
-          // 显示列表视图，隐藏详情视图
-          if (listViewRef.current) {
-            listViewRef.current.style.visibility = 'visible'
-            listViewRef.current.style.position = 'static'
-          }
-          if (detailViewRef.current) {
-            detailViewRef.current.style.visibility = 'hidden'
-            detailViewRef.current.style.position = 'absolute'
-          }
-        }
-      })
-
-      transition.finished.then(() => {
-        console.log('[VT] Animation finished')
-      })
-    })
-  }, [selectedId])
+  // useLayoutEffect(() => {
+  //   // 如果没有 View Transition API，直接返回
+  //   if (!document.startViewTransition) {
+  //     return
+  //   }
+  //
+  //   const goingToDetail = selectedId !== null
+  //
+  //   // 获取所有卡片元素
+  //   const listCardImages = listViewRef.current?.querySelectorAll<HTMLElement>('[data-transition-name]')
+  //   const detailCardImages = detailViewRef.current?.querySelectorAll<HTMLElement>('[data-transition-name]')
+  //
+  //   if (goingToDetail) {
+  //     // 进入详情页：
+  //     // 1. 在 View Transition 捕获前移除列表视图的 view-transition-name
+  //     listCardImages?.forEach(card => {
+  //       card.style.viewTransitionName = ''
+  //     })
+  //     // 2. 预先设置详情视图目标卡片的 view-transition-name
+  //     const targetCard = detailViewRef.current?.querySelector<HTMLElement>(`[data-transition-name="block-${selectedId}"]`)
+  //     if (targetCard) {
+  //       targetCard.style.viewTransitionName = `block-${selectedId}`
+  //     }
+  //   } else {
+  //     // 返回列表：
+  //     // 1. 在 View Transition 捕获前移除详情视图的 view-transition-name
+  //     detailCardImages?.forEach(card => {
+  //       card.style.viewTransitionName = ''
+  //     })
+  //     // 2. 恢复列表视图的 view-transition-name
+  //     listCardImages?.forEach(card => {
+  //       card.style.viewTransitionName = card.dataset.transitionName || ''
+  //     })
+  //   }
+  //
+  //   // 使用 requestAnimationFrame 确保 DOM 更新已经应用
+  //   requestAnimationFrame(() => {
+  //     const transition = document.startViewTransition(() => {
+  //       // 在 callback 中切换可见性
+  //       if (goingToDetail) {
+  //         // 显示详情视图，隐藏列表视图
+  //         if (detailViewRef.current) {
+  //           detailViewRef.current.style.visibility = 'visible'
+  //           detailViewRef.current.style.position = 'static'
+  //         }
+  //         if (listViewRef.current) {
+  //           listViewRef.current.style.visibility = 'hidden'
+  //           listViewRef.current.style.position = 'absolute'
+  //         }
+  //       } else {
+  //         // 显示列表视图，隐藏详情视图
+  //         if (listViewRef.current) {
+  //           listViewRef.current.style.visibility = 'visible'
+  //           listViewRef.current.style.position = 'static'
+  //         }
+  //         if (detailViewRef.current) {
+  //           detailViewRef.current.style.visibility = 'hidden'
+  //           detailViewRef.current.style.position = 'absolute'
+  //         }
+  //       }
+  //     })
+  //
+  //     transition.finished.then(() => {
+  //       console.log('[VT] Animation finished')
+  //     })
+  //   })
+  // }, [selectedId])
 
   const goToDetail = useCallback((id: number) => {
     setSelectedId(id)
