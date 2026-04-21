@@ -43,7 +43,7 @@ function Cursor({ visible }: { visible: boolean }) {
 // ── 主组件 ────────────────────────────────────────────────────────
 
 export default function ChatWindow() {
-  const { messages, status, retryCount, sendMessage } = useAIChat();
+  const { messages, status, retryCount, sendMessage, startStreamDemo } = useAIChat();
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -160,6 +160,15 @@ export default function ChatWindow() {
           disabled={isStreaming || status === 'reconnecting' || !input.trim()}
         >
           {isStreaming ? <span className={styles.spinner} /> : '发送'}
+        </button>
+        <button
+          className={styles.sendBtn}
+          style={{ marginLeft: 8, background: '#6366f1' }}
+          onClick={startStreamDemo}
+          disabled={isStreaming || status === 'reconnecting'}
+          title="用 stream-json 读取本地大文本，模拟 AI 逐字输出"
+        >
+          stream-json demo
         </button>
       </div>
     </div>

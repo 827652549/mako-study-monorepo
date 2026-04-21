@@ -4,7 +4,7 @@ import { useSSEConnection } from './useSSEConnection';
 
 export function useAIChat() {
   const [state, dispatch] = useReducer(chatReducer, initialState);
-  const { status, retryCount, sendMessage, abort } = useSSEConnection({ onDispatch: dispatch });
+  const { status, retryCount, sendMessage, abort, startStreamDemo } = useSSEConnection({ onDispatch: dispatch });
 
   return {
     messages: state.messages,
@@ -12,5 +12,6 @@ export function useAIChat() {
     retryCount,
     sendMessage,
     abort,
+    startStreamDemo,
   };
 }

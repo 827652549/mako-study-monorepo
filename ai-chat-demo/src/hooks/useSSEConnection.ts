@@ -45,6 +45,7 @@ export interface UseSSEConnectionReturn {
   retryCount: number;
   sendMessage: (question: string) => void;
   abort: () => void;
+  startStreamDemo: () => void;
 }
 
 export function useSSEConnection({ onDispatch }: UseSSEConnectionProps): UseSSEConnectionReturn {
@@ -266,7 +267,51 @@ export function useSSEConnection({ onDispatch }: UseSSEConnectionProps): UseSSEC
     [onDispatch, connect, clearRetryTimer],
   );
 
-  return { status, retryCount, sendMessage, abort };
+  // stream-demo：用 GET EventSource 读取本地大文本，走同一套 SSE 事件处理
+  const startStreamDemo = useCallback(() => {
+    if (isConnectingRef.current) return;
+
+    clearRetryTimer();
+    retryCountRef.current = 0;
+    setRetryCount(0);
+    isConnectingRef.current = true;
+
+    const messageId = `demo-${Date.now()}`;
+    onDispatch({ type: 'BEGIN', payload: { messageId, chatId: 'stream-demo', userText: '▶ stream-json demo' } });
+    setStatusSync('connecting');
+
+    // GET 接口用原生 EventSource（浏览器内置的 SSE 客户端）
+    // 和 fetch 读流不同：EventSource 自动处理重连，但只支持 GET
+    const es = new EventSource(`http://localhost:3001/api/stream-demo?delay=40`);
+
+    es.addEventListener('message_begin', () => setStatusSync('streaming'));
+
+    es.addEventListener('message_text', (e) => {
+      const data = JSON.parse(e.data) as { text: string };
+      onDispatch({ type: 'APPEND_TEXT', payload: { messageId, text: data.text } });
+    });
+
+    es.addEventListener('message_end', (e) => {
+      const data = JSON.parse(e.data) as { success: string };
+      es.close();
+      if (data.success === 'true') {
+        onDispatch({ type: 'END', payload: { messageId } });
+      } else {
+        onDispatch({ type: 'ERROR', payload: { messageId } });
+      }
+      setStatusSync('idle');
+      isConnectingRef.current = false;
+    });
+
+    es.onerror = () => {
+      es.close();
+      onDispatch({ type: 'ERROR', payload: { messageId } });
+      setStatusSync('error');
+      isConnectingRef.current = false;
+    };
+  }, [onDispatch, clearRetryTimer]);
+
+  return { status, retryCount, sendMessage, abort, startStreamDemo };
 }
 
 // ── 工具函数 ─────────────────────────────────────────────────────

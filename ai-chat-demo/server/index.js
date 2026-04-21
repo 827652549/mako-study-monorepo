@@ -1,9 +1,17 @@
 const express = require('express');
 const cors = require('cors');
-const { getScenario } = require('./scenarios');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const { Transform } = require('stream');
+const { parser } = require('stream-json');
+const { streamValues } = require('stream-json/streamers/StreamValues');
+const { streamArray } = require('stream-json/streamers/StreamArray');
 
 const app = express();
 const PORT = 3001;
+const OLLAMA_BASE_URL = 'http://localhost:11434';
+const MODEL = 'deepseek-r1:1.5b';
 
 app.use(cors());
 app.use(express.json());
@@ -17,13 +25,39 @@ function writeSSEEvent(res, event, data) {
 }
 
 /**
- * 辅助：带 delay 的 sleep
+ * 调用 ollama 流式生成
+ * 返回 NDJSON 流：{ response: '文本', done: false/true }
  */
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function callOllamaStream(prompt) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      model: MODEL,
+      prompt: prompt,
+      stream: true,
+      temperature: 0.7,
+    });
+
+    const req = http.request(
+      `${OLLAMA_BASE_URL}/api/generate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+        },
+      },
+      (res) => resolve(res)
+    );
+
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
 
 /**
  * POST /api/chat
- * 接收 { question, messageId } 返回 SSE 流
+ * 接收 { question, messageId } 返回 SSE 流（来自 ollama）
  */
 app.post('/api/chat', async (req, res) => {
   const { question = '', messageId = `msg-${Date.now()}` } = req.body;
@@ -32,43 +66,162 @@ app.post('/api/chat', async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no'); // 禁止 nginx 缓冲
+  res.setHeader('X-Accel-Buffering', 'no');
   res.flushHeaders();
 
-  const { events, name } = getScenario(messageId, question);
-  console.log(`[SSE] 场景: ${name} | messageId: ${messageId} | question: "${question}"`);
+  console.log(`[SSE] 发起 ollama 请求 | messageId: ${messageId} | question: "${question}"`);
 
-  // 客户端断开时清理
-  // 注意：Node 24+ 中 req.on('close') 在 body 被消费后就立刻触发，
-  // 不能用来检测客户端真正断开；改用 res.on('close') 监听响应侧断开。
+  // 监听客户端断开
   let aborted = false;
   res.on('close', () => {
     aborted = true;
     console.log(`[SSE] 客户端断开 | messageId: ${messageId}`);
   });
 
-  // 按顺序推送事件帧
-  for (const ev of events) {
-    if (aborted) break;
+  try {
+    // 发送 message_begin
+    writeSSEEvent(res, 'message_begin', JSON.stringify({
+      chatId: 'ollama-chat',
+      messageId,
+      question,
+    }));
 
-    await sleep(ev.delay || 0);
+    // 调用 ollama 流式生成
+    const ollamaStream = await callOllamaStream(question);
 
-    if (aborted) break;
+    let textAccumulated = '';
 
-    writeSSEEvent(res, ev.event, ev.data);
-    console.log(`  → event: ${ev.event}`);
+    // 用 stream-json 处理 NDJSON 流：
+    //   ollamaStream (Buffer)
+    //     → parser()      把 Buffer 解析成 JSON token 事件
+    //     → streamValues() 把 token 事件组装成完整 JS 对象，逐个 emit 'data'
+    // jsonStreaming: true 让 parser 支持连续多个 JSON 对象（即 NDJSON 格式）
+    const jsonStream = ollamaStream
+      .pipe(parser({ jsonStreaming: true }))
+      .pipe(streamValues());
 
-    // 模拟断线：发完当前帧后强制关闭连接
-    if (ev.closeAfter) {
-      console.log(`[SSE] 模拟断线，关闭连接 | messageId: ${messageId}`);
+    jsonStream.on('data', ({ value }) => {
+      // value 是每条 ollama NDJSON 行解析后的 JS 对象
+      if (aborted) return;
+
+      if (value.response) {
+        writeSSEEvent(res, 'message_text', JSON.stringify({ text: value.response }));
+        textAccumulated += value.response;
+        console.log(`  → text fragment: "${value.response}"`);
+      }
+
+      if (value.done) {
+        console.log(`[SSE] ollama 生成完毕 | totalChars: ${textAccumulated.length}`);
+        writeSSEEvent(res, 'message_end', JSON.stringify({ success: 'true' }));
+        res.end();
+      }
+    });
+
+    jsonStream.on('error', (err) => {
+      console.error('[SSE] stream-json 解析错误:', err.message);
+      if (!aborted) {
+        writeSSEEvent(res, 'message_end', JSON.stringify({
+          success: 'false',
+          errorMessage: err.message,
+        }));
+        res.end();
+      }
+    });
+
+    jsonStream.on('end', () => {
+      if (!aborted && !res.writableEnded) {
+        console.log('[SSE] ollama 流意外结束');
+        writeSSEEvent(res, 'message_end', JSON.stringify({
+          success: 'false',
+          errorMessage: 'Stream ended unexpectedly',
+        }));
+        res.end();
+      }
+    });
+  } catch (err) {
+    console.error('[SSE] 错误:', err.message);
+    if (!aborted) {
+      writeSSEEvent(res, 'message_end', JSON.stringify({
+        success: 'false',
+        errorMessage: err.message,
+      }));
       res.end();
-      return;
     }
   }
+});
 
-  if (!aborted) {
-    res.end();
-  }
+/**
+ * GET /api/stream-demo
+ * 用 stream-json 读取 data/article.json（字符数组），
+ * 通过 DelayTransform 限速，把每个字符转成 SSE message_text 事件。
+ *
+ * Pipeline:
+ *   fs.createReadStream  →  parser()  →  streamArray()  →  DelayTransform  →  SSE
+ *   (Buffer)               (JSON token)  (JS 对象)         (限速)             (文本帧)
+ */
+app.get('/api/stream-demo', (req, res) => {
+  const messageId = `mock-${Date.now()}`;
+  const delayMs = Number(req.query.delay) || 40; // 每个字符的延迟，默认 40ms
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  let aborted = false;
+  res.on('close', () => { aborted = true; });
+
+  writeSSEEvent(res, 'message_begin', JSON.stringify({
+    chatId: 'stream-demo',
+    messageId,
+    question: 'stream-json demo',
+  }));
+
+  // DelayTransform：objectMode，每收到一个值就等 delayMs 毫秒再往下传
+  // 这是 Transform 流的典型用法：在管道中间插入任意变换逻辑
+  const delay = new Transform({
+    objectMode: true,
+    transform({ value }, _enc, callback) {
+      if (aborted) return callback();
+      setTimeout(() => {
+        this.push(value); // value 是字符串（单个字符）
+        callback();
+      }, delayMs);
+    },
+  });
+
+  const articlePath = path.join(__dirname, 'data/article.json');
+
+  // Pipeline:
+  //   fs.createReadStream  不把整个文件读进内存，按 chunk 推给 parser
+  //   parser()             把字节流解析成 JSON token（startArray / stringValue / endArray...）
+  //   streamArray()        把 token 重新组装成数组元素，逐个 emit { key, value }
+  //   delay                限速 Transform
+  fs.createReadStream(articlePath)
+    .pipe(parser())
+    .pipe(streamArray())
+    .pipe(delay);
+
+  delay.on('data', (char) => {
+    if (aborted) return;
+    writeSSEEvent(res, 'message_text', JSON.stringify({ text: char }));
+  });
+
+  delay.on('end', () => {
+    if (!aborted) {
+      writeSSEEvent(res, 'message_end', JSON.stringify({ success: 'true' }));
+      res.end();
+    }
+  });
+
+  delay.on('error', (err) => {
+    console.error('[stream-demo] error:', err.message);
+    if (!aborted) {
+      writeSSEEvent(res, 'message_end', JSON.stringify({ success: 'false', errorMessage: err.message }));
+      res.end();
+    }
+  });
 });
 
 /**
@@ -134,12 +287,9 @@ app.get('/api/flight-detail', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n✅ Mock SSE Server 启动成功`);
+  console.log(`\n✅ Ollama SSE Server 启动成功`);
   console.log(`   http://localhost:${PORT}`);
-  console.log(`\n   接口：POST /api/chat`);
-  console.log(`   接口：GET  /api/flight-detail`);
-  console.log(`\n   场景触发关键词：`);
-  console.log(`     "机票" / "航班" → 机票推荐场景`);
-  console.log(`     "断线" / "断网" → 中途断线场景`);
-  console.log(`     其他             → 纯文本场景\n`);
+  console.log(`   ollama: ${OLLAMA_BASE_URL}/api/generate`);
+  console.log(`   model: ${MODEL}`);
+  console.log(`\n   接口：POST /api/chat (实时 ollama 流式生成)\n`);
 });
