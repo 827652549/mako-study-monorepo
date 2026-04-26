@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1-最简单的Video播放器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 32px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .video-section {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            max-width: 640px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .source-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            max-width: 640px;
+            width: 100%;
+        }
+
+        .source-btn {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .source-btn:hover {
+            border-color: #667eea;
+            background: #f5f5ff;
+        }
+
+        .source-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px 32px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .info-section h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-section p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .code-snippet {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+
+        .box-diagram {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 12px 0;
+            overflow-x: auto;
+            min-height: 80px;
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 11px;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .box-ftyp {
+            background: #4CAF50;
+            color: white;
+            width: 60px;
+        }
+
+        .box-moov {
+            background: #2196F3;
+            color: white;
+            width: 200px;
+        }
+
+        .box-mdat {
+            background: #FF9800;
+            color: white;
+            min-width: 300px;
+            flex-grow: 1;
+        }
+
+        .box-arrow {
+            color: #999;
+            font-size: 18px;
+        }
+
+        .box-info {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 6px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .box-info span {
+            display: block;
+        }
+
+        .comparison {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .comparison {
+                flex-direction: row;
+            }
+        }
+
+        .comparison-item {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .comparison-item h4 {
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-success {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .badge-warning {
+            background: #FFE0B2;
+            color: #E65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 最简单的Video播放器</h1>
+            <p>HTML5 &lt;video&gt; 元素基础示例</p>
+        </div>
+
+        <div class="video-section">
+            <div class="video-wrapper">
+                <video id="videoPlayer" src="./bigmp4-moov-first.mp4" controls preload="none"></video>
+            </div>
+
+            <div class="source-selector">
+                <button class="source-btn active" data-src="./bigmp4-moov-first.mp4">bigmp4-moov-first (Fast Start)</button>
+                <button class="source-btn" data-src="./bigmp4-moov-end.mp4">bigmp4-moov-end (非 Fast Start)</button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>核心代码</h3>
+            <div class="code-snippet">
+&lt;video src="video.mp4" controls&gt;&lt;/video&gt;
+            </div>
+            <p style="margin-top: 12px;">
+                <strong>controls</strong> 属性会添加浏览器默认的播放控制条。
+            </p>
+
+            <h3 style="margin-top: 24px;">MP4 盒子结构对比</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">
+                MP4 文件由多个"盒子"(Box)组成，<strong>moov</strong> 包含元数据，<strong>mdat</strong> 包含实际音视频数据。
+                Fast Start 文件将 moov 放在 mdat 之前，允许边下载边播放。
+            </p>
+
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h4>📁 bigmp4-moov-first.mp4 <span class="badge badge-success">Fast Start</span></h4>
+                    <div class="box-diagram">
+                        <div class="box box-ftyp">
+                            <span>ftyp</span>
+                            <div class="box-info"><span>0x00</span><span>32B</span></div>
+                        </div>
+                        <span class="box-arrow">→</span>
+                        <div class="box box-moov">
+                            <span>moov</span>
+                            <div class="box-info"><span>0x20</span><span>306KB</span></div>
+                        </div>
+                        <span class="box-arrow">→</span>
+                        <div class="box box-mdat">
+                            <span>mdat</span>
+                            <div class="box-info"><span>0x4B2B6</span><span>64MB</span></div>
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: #666;">
+                        ✅ moov 在文件开头，浏览器解析元数据后可立即开始播放
+                    </p>
+                </div>
+
+                <div class="comparison-item">
+                    <h4>📁 bigmp4-moov-end.mp4 <span class="badge badge-warning">非 Fast Start</span></h4>
+                    <div class="box-diagram">
+                        <div class="box box-ftyp">
+                            <span>ftyp</span>
+                            <div class="box-info"><span>0x00</span><span>20B</span></div>
+                        </div>
+                        <span class="box-arrow">→</span>
+                        <div class="box box-mdat">
+                            <span>mdat</span>
+                            <div class="box-info"><span>0x1C</span><span>64MB</span></div>
+                        </div>
+                        <span class="box-arrow">→</span>
+                        <div class="box box-moov">
+                            <span>moov</span>
+                            <div class="box-info"><span>0x3D55605</span><span>344KB</span></div>
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: #666;">
+                        ❌ moov 在文件末尾，需下载整个文件后才能开始播放
+                    </p>
+                </div>
+            </div>
+
+            <div class="code-snippet" style="margin-top: 16px;">
+                <pre>
+# 使用 mp4box 查看盒子信息
+mp4box -info bigmp4-moov-first.mp4
+# 输出: Progressive (moov before mdat) ✓
+
+mp4box -info bigmp4-moov-end.mp4
+# 输出: (无 Progressive 标记) ✗
+                </pre>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const buttons = document.querySelectorAll('.source-btn');
+        const STORAGE_KEY = 'selected_video_src';
+
+        // 从 sessionStorage 恢复选中状态
+        function restoreSelection() {
+            const savedSrc = sessionStorage.getItem(STORAGE_KEY);
+            if (savedSrc) {
+                const matchingBtn = Array.from(buttons).find(btn => btn.dataset.src === savedSrc);
+                if (matchingBtn) {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    matchingBtn.classList.add('active');
+                    video.src = savedSrc;
+                }
+            }
+        }
+
+        // 保存选中状态
+        function saveSelection(src) {
+            sessionStorage.setItem(STORAGE_KEY, src);
+        }
+
+        // 绑定点击事件
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const src = btn.dataset.src;
+                const currentTime = video.currentTime;
+
+                video.src = src;
+                video.currentTime = currentTime;
+                saveSelection(src);
+                video.play().catch(e => console.log('自动播放被阻止:', e));
+            });
+        });
+
+        // 页面加载时恢复状态
+        window.addEventListener('DOMContentLoaded', restoreSelection);
+    </script>
+</body>
+</html>

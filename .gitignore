@@ -5,4 +5,5 @@ dist
 playground.ts
 .env
 .env.local
-.env.*.local
+*.mp4
+
